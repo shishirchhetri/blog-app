@@ -1,6 +1,7 @@
 .container {
   display: flex;
   gap: 100px;
+  height: calc(100vh - 200px);
 }
 
 .textContainer {
