@@ -2,10 +2,11 @@ import PostCard from '@/components/postCard/postCard';
 import styles from './blog.module.css';
 
 const BlogPage = async () => {
-  const url = 'https://jsonplaceholder.typicode.com/posts';
   const getData = async () => {
     //revalidate will refresh page in the given time
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      next: { revalidate: 3600 },
+    });
     if (!res.ok) {
       console.log('something went wrong while fetching data');
     }
