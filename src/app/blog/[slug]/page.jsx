@@ -2,18 +2,25 @@ import Image from 'next/image';
 import styles from './singlePost.module.css';
 import PostUser from '@/components/postuser/PostUsers';
 import { Suspense } from 'react';
+import { getPost } from '@/lib/data';
 
-const getData = async (slug) => {
-  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${slug}`);
-  if (!res.ok) {
-    console.log('something went wrong while fetching data');
-  }
-  return res.json();
-};
+//fetch data with an api
+// const getData = async (slug) => {
+//   const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${slug}`);
+//   if (!res.ok) {
+//     console.log('something went wrong while fetching data');
+//   }
+//   return res.json();
+// };
 
 const SinglePostPage = async ({ params }) => {
   const { slug } = params;
-  const post = await getData(slug);
+
+  //fetch post with an api
+  // const post = await getData(slug);
+
+  // fetch post without an api
+  const post = await getPost(slug);
 
   return (
     <div className={styles.container}>
@@ -26,7 +33,7 @@ const SinglePostPage = async ({ params }) => {
         />
       </div>
       <div className={styles.textContainer}>
-        <h1 className={styles.title}>{post.title}</h1>
+        <h1 className={styles.title}>{post?.title}</h1>
         <div className={styles.detail}>
           <Image
             src='https://images.pexels.com/photos/17401506/pexels-photo-17401506/free-photo-of-sunlit-cobblestone-street-near-building-wall.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load'
@@ -36,9 +43,11 @@ const SinglePostPage = async ({ params }) => {
             className={styles.avatar}
           />
           {/* we can create a skeleton for the loading effect and put here instead of div */}
-          <Suspense fallback={<div>Loading...</div>}>
-            <PostUser userId={post.userId} />
-          </Suspense>
+          {post && (
+            <Suspense fallback={<div>Loading...</div>}>
+              <PostUser userId={post.userId} />
+            </Suspense>
+          )}{' '}
           <div className={styles.detailText}>
             <span className={styles.detailTitle}>Published</span>
             <span className={styles.detailValue}>01.23.2023</span>
