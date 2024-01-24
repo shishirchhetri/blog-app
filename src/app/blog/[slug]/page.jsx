@@ -13,6 +13,15 @@ import { getPost } from '@/lib/data';
 //   return res.json();
 // };
 
+export const generateMetaData = async ({ params }) => {
+  const slug = { params };
+  const post = await getPost(slug);
+  return {
+    title: post.title,
+    description: post.desc,
+  };
+};
+
 const SinglePostPage = async ({ params }) => {
   const { slug } = params;
 
@@ -22,7 +31,6 @@ const SinglePostPage = async ({ params }) => {
   // fetch post without an api
   const post = await getPost(slug);
 
-  console.log(post);
   return (
     <div className={styles.container}>
       <div className={styles.imgContainer}>
