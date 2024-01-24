@@ -2,6 +2,7 @@
 
 import { Post, User } from './models';
 import { connectToDb } from './utils';
+import { unstable_noStore as noStore } from 'next/cache';
 
 /* 
 const users = [
@@ -35,7 +36,7 @@ export const getPost = async (slug) => {
   try {
     //check and connect to mongoose
     connectToDb();
-    const post = await Post.find({ slug });
+    const post = await Post.findOne({ slug });
     return post;
   } catch (err) {
     console.log(err);
@@ -59,6 +60,7 @@ export const getUsers = async () => {
 
 export const getUser = async (id) => {
   // return users.find((user) => user.id === id);
+  noStore();
   try {
     //check and connect to mongoose
     connectToDb();
