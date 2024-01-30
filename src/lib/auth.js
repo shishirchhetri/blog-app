@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import Github from 'next-auth/providers/github';
 export const {
-  handlers: [GET, POST],
+  handlers: { GET, POST },
   auth,
   signIn,
   signOut,
@@ -12,4 +12,10 @@ export const {
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
+  callbacks: {
+    async signIn(user, account, profile) {
+      console.log(user, account, profile);
+      return true;
+    },
+  },
 });
