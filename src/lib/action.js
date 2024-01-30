@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { Post } from './models';
 import { connectToDb } from './utils';
+import { signIn, signOut } from './auth';
 
 export const addPost = async (formData) => {
   const { title, desc, slug, userId } = Object.fromEntries(formData);
@@ -33,4 +34,12 @@ export const deletePost = async (formData) => {
     console.log(err);
     return { error: 'unknown error occured while deleting the post' };
   }
+};
+
+export const handleGithubLogin = async () => {
+  await signIn('github');
+};
+
+export const handleLogout = async () => {
+  await signOut();
 };
