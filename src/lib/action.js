@@ -49,13 +49,13 @@ export const register = async (formData) => {
   const { username, email, password, passwordRepeat, img } =
     Object.fromEntries(formData);
   if (password !== passwordRepeat) {
-    return 'Password doesnot match.';
+    return { error: 'Password doesnot match.' };
   }
   try {
     connectToDb();
     const user = await User.findOne({ username });
     if (user) {
-      return 'Username already exists!';
+      return { error: 'Username already exists!' };
     }
     const salt = bcrypt.genSaltSync(10);
     const hashedPass = bcrypt.hashSync(password, salt);
@@ -67,6 +67,7 @@ export const register = async (formData) => {
     });
     await newUser.save();
     console.log('New user Registered');
+    return { success: true };
   } catch (err) {
     console.log(err);
     return { error: 'unknown error occured while registering new user' };
