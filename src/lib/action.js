@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { Post, User } from './models';
 import { connectToDb } from './utils';
 import { signIn, signOut } from './auth';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export const addPost = async (formData) => {
   const { title, desc, slug, userId } = Object.fromEntries(formData);
@@ -45,7 +45,7 @@ export const handleLogout = async () => {
   await signOut();
 };
 
-export const register = async (formData) => {
+export const register = async (previousState, formData) => {
   const { username, email, password, passwordRepeat, img } =
     Object.fromEntries(formData);
   if (password !== passwordRepeat) {
@@ -54,8 +54,13 @@ export const register = async (formData) => {
   try {
     connectToDb();
     const user = await User.findOne({ username });
+
+    const userEmail = await User.findOne({ email });
     if (user) {
       return { error: 'Username already exists!' };
+    }
+    if (userEmail) {
+      return { error: 'Email already exists!' };
     }
     const salt = bcrypt.genSaltSync(10);
     const hashedPass = bcrypt.hashSync(password, salt);
@@ -74,15 +79,18 @@ export const register = async (formData) => {
   }
 };
 
-export const login = async (formData) => {
+export const login = async (previousState, formData) => {
   const { username, password } = Object.fromEntries(formData);
   try {
     connectToDb();
     await signIn('credentials', { username, password });
-
     console.log('loggedin successfully!');
+    return { success: true };
   } catch (err) {
     console.log(err);
-    return { error: 'unknown error occured while logging in' };
+    if (err.message.includes('CredentialsSignin')) {
+      return { error: 'Invalid username or password' };
+    }
+    throw err;
   }
 };
