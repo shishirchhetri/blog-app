@@ -1,8 +1,9 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { Post } from './models';
+import { Post, User } from './models';
 import { connectToDb } from './utils';
 import { signIn, signOut } from './auth';
+import bcrypt from 'bcrypt';
 
 export const addPost = async (formData) => {
   const { title, desc, slug, userId } = Object.fromEntries(formData);
@@ -42,4 +43,45 @@ export const handleGithubLogin = async () => {
 
 export const handleLogout = async () => {
   await signOut();
+};
+
+export const register = async (formData) => {
+  const { username, email, password, passwordRepeat, img } =
+    Object.fromEntries(formData);
+  if (password !== passwordRepeat) {
+    return 'Password doesnot match.';
+  }
+  try {
+    connectToDb();
+    const user = await User.findOne({ username });
+    if (user) {
+      return 'Username already exists!';
+    }
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPass = bcrypt.hashSync(password, salt);
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPass,
+      img,
+    });
+    await newUser.save();
+    console.log('New user Registered');
+  } catch (err) {
+    console.log(err);
+    return { error: 'unknown error occured while registering new user' };
+  }
+};
+
+export const login = async (formData) => {
+  const { username, password } = Object.fromEntries(formData);
+  try {
+    connectToDb();
+    await signIn('credentials', { username, password });
+
+    console.log('loggedin successfully!');
+  } catch (err) {
+    console.log(err);
+    return { error: 'unknown error occured while logging in' };
+  }
 };
