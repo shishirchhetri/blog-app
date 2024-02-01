@@ -4,6 +4,7 @@ import { connectToDb } from './utils';
 import { User } from './models';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
+import { authConfig } from './auth.config';
 
 const login = async (credentials) => {
   try {
@@ -32,6 +33,8 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  //usage of the middleware we created so that it would be overwritten in cases
+  ...authConfig,
   providers: [
     Github({
       clientId: process.env.GITHUB_ID,
@@ -70,5 +73,7 @@ export const {
       }
       return true;
     },
+    //To remove the overwriting of the config we created
+    ...authConfig.callbacks,
   },
 });
