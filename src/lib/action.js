@@ -18,6 +18,8 @@ export const addPost = async (formData) => {
     await newPost.save();
     console.log('New post saved to Database');
     revalidatePath('/blog');
+
+    revalidatePath('/admin');
   } catch (err) {
     console.log(err);
     return { error: 'something went wrong while adding post' };
@@ -31,6 +33,41 @@ export const deletePost = async (formData) => {
     await Post.findByIdAndDelete(id);
     console.log('Post removed from the database');
     revalidatePath('/blog');
+
+    revalidatePath('/admin');
+  } catch (err) {
+    console.log(err);
+    return { error: 'unknown error occured while deleting the post' };
+  }
+};
+
+export const addUser = async (previosState, formData) => {
+  const { username, email, password, img } = Object.fromEntries(formData);
+  try {
+    connectToDb();
+    const newUser = new User({
+      username,
+      email,
+      password,
+      img,
+    });
+    await newUser.save();
+    console.log('New User added to Database');
+    revalidatePath('/admin');
+  } catch (err) {
+    console.log(err);
+    return { error: 'something went wrong adding new user' };
+  }
+};
+
+export const deleteUser = async (formData) => {
+  const { id } = Object.fromEntries(formData);
+  try {
+    connectToDb();
+    await Post.deleteMany({ userId: id });
+    await User.findByIdAndDelete(id);
+    console.log('User and his posts removed');
+    revalidatePath('/admin');
   } catch (err) {
     console.log(err);
     return { error: 'unknown error occured while deleting the post' };
