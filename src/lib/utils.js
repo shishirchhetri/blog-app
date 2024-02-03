@@ -15,3 +15,10 @@ export const connectToDb = async () => {
     throw new Error(err);
   }
 };
+
+export const formatDate = (date) => {
+  const options = { month: 'short', day: 'numeric' };
+  const formattedDate = new Date(date).toLocaleString('en-US', options);
+  const year = new Date(date).getFullYear();
+  return `${formattedDate}, ${year}`;
+};
