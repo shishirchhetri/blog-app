@@ -3,6 +3,7 @@ import styles from './singlePost.module.css';
 import PostUser from '@/components/postuser/PostUsers';
 import { Suspense } from 'react';
 import { getPost } from '@/lib/data';
+import { formatDate } from '@/lib/utils';
 
 //fetch data with an api
 const getData = async (slug) => {
@@ -53,7 +54,7 @@ const SinglePostPage = async ({ params }) => {
           <div className={styles.detailText}>
             <span className={styles.detailTitle}>Published</span>
             <span className={styles.detailValue}>
-              {post.createdAt.toString().slice(4, 16)}
+              {formatDate(post.createdAt.toString())}
             </span>
           </div>
         </div>
