@@ -5,8 +5,8 @@ import { connectToDb } from './utils';
 import { signIn, signOut } from './auth';
 import bcrypt from 'bcryptjs';
 
-export const addPost = async (formData) => {
-  const { title, desc, slug, userId } = Object.fromEntries(formData);
+export const addPost = async (previosState, formData) => {
+  const { title, desc, slug, userId, img } = Object.fromEntries(formData);
   try {
     connectToDb();
     const newPost = new Post({
@@ -14,6 +14,7 @@ export const addPost = async (formData) => {
       desc,
       slug,
       userId,
+      img,
     });
     await newPost.save();
     console.log('New post saved to Database');
@@ -42,14 +43,18 @@ export const deletePost = async (formData) => {
 };
 
 export const addUser = async (previosState, formData) => {
-  const { username, email, password, img } = Object.fromEntries(formData);
+  const { username, email, password, img, isAdmin } =
+    Object.fromEntries(formData);
   try {
     connectToDb();
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPass = bcrypt.hashSync(password, salt);
     const newUser = new User({
       username,
       email,
-      password,
+      password: hashedPass,
       img,
+      isAdmin,
     });
     await newUser.save();
     console.log('New User added to Database');
